@@ -11,14 +11,14 @@ import Charts
 
 struct ChartView: View {
     @Binding var chartType: ChartType
-    @Binding var chartPosXCordinator: Double
+    @Binding var chartPosXCordinator: Date
     let isSource: Bool
     
     let chartNamespace: Namespace.ID
     let withChartOption: Bool
     let moods: [Mood]
     
-    init(chartType: Binding<ChartType>, chartPosXCordinator: Binding<Double> = Binding.constant(0), isSource: Bool, chartNamespace: Namespace.ID, withChartOption: Bool, moods: [Mood] = Mood.previews) {
+    init(chartType: Binding<ChartType>, chartPosXCordinator: Binding<Date> = Binding.constant(.now), isSource: Bool, chartNamespace: Namespace.ID, withChartOption: Bool, moods: [Mood] = Mood.previews) {
         self._chartType = chartType
         self._chartPosXCordinator = chartPosXCordinator
         self.isSource = isSource
@@ -89,8 +89,6 @@ struct ChartView: View {
         }
         .hiddenModifier(isHide: !withChartOption)
     }
-    
-    
 }
 
 extension ChartView {
@@ -143,14 +141,19 @@ extension ChartView {
         
         let yMin: Int
         let yMax: Int
-        @Binding var chartPosX: Double
+        @Binding var chartPosX: Date
         
-        init(chartNamespace: Namespace.ID, isSource: Bool, moodChartData: [Mood], chartPosXCordinator: Binding<Double> = Binding.constant(0) ) {
+        private let timeRatio: Double = 0.05
+        private var deltaDate: TimeInterval = 1
+        
+        init(chartNamespace: Namespace.ID, isSource: Bool, moodChartData: [Mood], chartPosXCordinator: Binding<Date> = Binding.constant(.now) ) {
             self.chartNamespace = chartNamespace
             self.isSource = isSource
             self.moodChartData = moodChartData.sorted{ $0.dateCreated < $1.dateCreated }
             
-            let deltaDate = ((self.moodChartData.last?.dateCreated.timeIntervalSince1970)! - (self.moodChartData.first?.dateCreated.timeIntervalSince1970)!) * 0.05
+            if self.moodChartData.count > 1 {
+                deltaDate = ((self.moodChartData.last?.dateCreated.timeIntervalSince1970)! - (self.moodChartData.first?.dateCreated.timeIntervalSince1970)!) * 0.05
+            }
             
             self.firstDate = (self.moodChartData.first?.dateCreated)! - deltaDate
             self.lastDate = (self.moodChartData.last?.dateCreated)! + deltaDate
@@ -162,80 +165,80 @@ extension ChartView {
         }
         
         var body: some View {
-            if self.moodChartData.count < 2 {
-                EmptyView()
-            }else{
-                if #available(iOS 17.0, *) {
-                    Chart(moodChartData) { data in
-                        LineMark(x: .value("Month", data.dateCreated), y: .value("Mood", data.moodType.moodIntValue))
-                            .foregroundStyle(ColorPallet.DeepAquaBlue)
-                            .interpolationMethod(.monotone)
-                            
-                            .symbol {
-                                VStack(spacing: 0){
-                                    ZStack{
-                                        Circle()
-                                            .fill(ColorPallet.SkyBlue)
-                                            .frame(width: 32, height: 32)
-                                            .shadow(radius: 3)
-                                        Text(data.moodType.emoji)
-                                            .font(.title)
-                                    }
-                                    
-                                    VStack{
-                                        Text(data.moodType.mood)
-                                            .font(
-                                                Font.custom("SF Pro Text", size: 8)
-                                                    .weight(.bold)
-                                            )
-                                            .foregroundStyle(.black)
-                                        
-                                        Text(data.dateCreated, style: .date)
-                                            .font(
-                                                Font.custom("SF Pro Text", size: 4)
-                                            )
-                                            .foregroundStyle(.black)
-                                    }
+            if #available(iOS 17.0, *) {
+                Chart(moodChartData) { data in
+                    LineMark(x: .value("Month", data.dateCreated), y: .value("Mood", data.moodType.moodIntValue))
+                        .foregroundStyle(ColorPallet.DeepAquaBlue)
+                        .interpolationMethod(.monotone)
+                        .symbol {
+                            VStack(spacing: 0){
+                                ZStack{
+                                    Circle()
+                                        .fill(ColorPallet.SkyBlue)
+                                        .frame(width: 32, height: 32)
+                                        .shadow(radius: 3)
+                                    Text(data.moodType.emoji)
+                                        .font(.title)
                                 }
                                 
-                                .offset(y: 12)
+                                VStack{
+                                    Text(data.moodType.mood)
+                                        .font(
+                                            Font.custom("SF Pro Text", size: 8)
+                                                .weight(.bold)
+                                        )
+                                        .foregroundStyle(.black)
+                                    
+                                    Text(data.dateCreated, style: .date)
+                                        .font(
+                                            Font.custom("SF Pro Text", size: 4)
+                                        )
+                                        .foregroundStyle(.black)
+                                }
                             }
-                            .zIndex(2)
-                        
-                        RuleMark(x: .value("Month", data.dateCreated))
-                            .foregroundStyle(Color.gray)
-                            .lineStyle(.init(lineWidth: 1, dash: [5,7]))
-                            .opacity(0.3)
-                            .zIndex(-1)
-                    }
-                    .chartYScale(domain: yMin...yMax)
-                    .chartXScale(domain: firstDate...lastDate)
-                    .frame(width: UIViewController().view.bounds.width)
-                    .frame(height: 250)
-                    .chartScrollPosition(x: $chartPosX)
-                    .chartScrollableAxes(.horizontal)
-                    .chartYAxis(.visible)
-                    .chartXAxis(content: {
-                        AxisMarks {
-                            AxisValueLabel().foregroundStyle(.gray)
+                            
+                            .offset(y: 12)
                         }
-                    })
-                    .chartYAxis{
-                        AxisMarks(values: .stride(by: 1)) {
-                            let _ = $0.as(Int.self)!
-                                AxisGridLine()
-                                .foregroundStyle(.gray.opacity(0.3))
-                                
-                                AxisTick()
-                                .foregroundStyle(.black)
-                        }
-                    }
-                    .foregroundColor(.black)
-                    .aspectRatio(1, contentMode: .fit)
-                    .matchedGeometryEffect(id: "chart", in: self.chartNamespace, isSource: isSource)
-                }else{
-                    Text("Must be iOS 17.0")
+                        .zIndex(2)
+                    
+                    RuleMark(x: .value("Month", data.dateCreated))
+                        .foregroundStyle(Color.gray)
+                        .lineStyle(.init(lineWidth: 1, dash: [5,7]))
+                        .opacity(0.3)
+                        .zIndex(-1)
                 }
+                .chartYScale(domain: yMin...yMax)
+                .chartXScale(domain: firstDate...lastDate)
+                .frame(width: UIViewController().view.bounds.width)
+                
+                .frame(height: 250)
+                .chartScrollableAxes(.horizontal)
+                .chartYAxis(.visible)
+                
+                .chartScrollPosition(x: self.$chartPosX)
+                .chartXAxis(content: {
+                    AxisMarks {
+                        AxisValueLabel().foregroundStyle(.gray)
+                    }
+                })
+                .chartYAxis{
+                    AxisMarks(values: .stride(by: 1)) {
+                        let _ = $0.as(Int.self)!
+                        AxisGridLine()
+                            .foregroundStyle(.gray.opacity(0.3))
+                        
+                        AxisTick()
+                            .foregroundStyle(.black)
+                    }
+                }
+                .foregroundColor(.black)
+                .aspectRatio(1, contentMode: .fit)
+                .matchedGeometryEffect(id: "chart", in: self.chartNamespace, isSource: isSource)
+                .onAppear{
+                    self.chartPosX = (self.moodChartData.last?.dateCreated ?? Date.now) - 0.5
+                }
+            }else{
+                Text("Must be iOS 17.0")
             }
         }
     }
@@ -282,7 +285,7 @@ extension ChartView {
                     }
                     .hiddenModifier(isHide: (chartType != .donut))
                     .matchedGeometryEffect(id: "chartContent", in: self.chartNamespace, isSource: isSource)
-                
+                    
                     Chart{
                         ForEach( moodChartDatas, id: \.moodType) { moodChartData in
                             if chartType == .bar {
@@ -305,7 +308,7 @@ extension ChartView {
                         }
                     }
                     .matchedGeometryEffect(id: "chart", in: self.chartNamespace, isSource: isSource)
-
+                    
                 }
                 .padding(.top, 16)
                 
@@ -323,15 +326,12 @@ struct QuantityMoodChartData {
 }
 
 func convertMoodToMoodQuantityChartData(moods: [Mood]) -> [QuantityMoodChartData]{
-    // Create a dictionary to count the occurrences of each mood
     var moodCounts = [MoodType: Int]()
     
-    // Iterate through the testMood array and count the occurrences
     for mood in moods {
         moodCounts[mood.moodType] = (moodCounts[mood.moodType] ?? 0) + 1
     }
     
-    // Create an array of MoodChartData by iterating through the dictionary
     var moodChartData = [QuantityMoodChartData]()
     for (mood, count) in moodCounts {
         moodChartData.append(QuantityMoodChartData(moodType: mood, count: count))
@@ -352,7 +352,6 @@ extension ChartView {
 #if DEBUG
 #Preview {
     let namespace = Namespace().wrappedValue
-    //    return ChartView(isSource: true, chartNamespace: namespace, withChartOption: true)
-    return ChartView(chartType: Binding.constant(.line), chartPosXCordinator: Binding.constant(0), isSource: true, chartNamespace: namespace, withChartOption: true, moods: [Mood(mood: .Angry, dateCreated: .now, moodString: ""), Mood(mood: .Happy, dateCreated: .now + 10, moodString: "")])
+    return ChartView(chartType: Binding.constant(.line), chartPosXCordinator: Binding.constant(.now), isSource: true, chartNamespace: namespace, withChartOption: true, moods: [Mood(mood: .Angry, dateCreated: .now, moodString: ""), Mood(mood: .Happy, dateCreated: .now + 10, moodString: "")])
 }
 #endif

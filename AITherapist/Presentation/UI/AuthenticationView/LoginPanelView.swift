@@ -111,8 +111,7 @@ struct LoginPanelView: View {
     }
     
     @ViewBuilder var thirdPartyLoginBtnView: some View {
-        VStack(spacing: 32) {
-            
+        VStack(spacing: 32) {            
             GoogleSignInButton (style: .wide) {
                 onGoogleLoginClicked()
             }
@@ -155,6 +154,6 @@ struct LoginPanelView: View {
     
 }
 
-#Preview {
-    LoginPanelView(email: Binding.constant(""), password: Binding.constant(""), showCreateAcount: Binding.constant(true), viewModel: .init(container: .previews), onGoogleLoginClicked: {}, onLoginClicked: {})
-}
+//#Preview {
+//    LoginPanelView(email: Binding.constant(""), password: Binding.constant(""), showCreateAcount: Binding.constant(true), viewModel: .init(container: .previews), onGoogleLoginClicked: {}, onLoginClicked: {})
+//}

@@ -140,13 +140,15 @@ extension SettingView{
             self.personas = personas
             self.setting = .notRequested
             
+            
             $setting
                 .debounce(for: .seconds(0), scheduler: DispatchQueue.main)
                 .sink { [weak self] setting in
                     self?.personality = setting.value?.personaID ?? 1
-                    self?.showNotification = (setting.value?.isNotificationEnabled ?? false)
                 }
                 .store(in: cancelBag)
+            
+            self.showNotification = PersistentManager.instance.getNotificationSeen()
             
             self.loadPersonas()
         }

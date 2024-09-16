@@ -239,9 +239,9 @@ private extension ChatView {
                 Image(systemName: "chevron.backward")
                     .font(.subheadline)
                     .foregroundStyle(ColorPallet.Celeste)
-                    .padding([.leading], 16)
+                    .padding([.leading], 28)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: 36)
+                    .frame(height: 45)
             }
         }
     }

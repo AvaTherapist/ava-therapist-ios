@@ -25,13 +25,15 @@ struct MessageView : View {
                     errorSendingMessageView
                 }
                 
-                ContentMessageView(contentMessage: chat.message,
-                                   isUser: chat.isUserMessage, withAnimation: (chat.chatState == .BeingSent)
-                                   , animateText: (chat.chatState == .LastServerChat)
-                              )
-                
-                if self.chat.chatState == .LoadingServerChat {
-                    CircleLoading(circleSize: 10, mainColor: ColorPallet.Celeste, secondaryColor: ColorPallet.Celeste)
+                ZStack{
+                    ContentMessageView(contentMessage: chat.message,
+                                       isUser: chat.isUserMessage, withAnimation: (chat.chatState == .BeingSent)
+                                       , animateText: (chat.chatState == .LastServerChat)
+                    ).hiddenModifier(isHide: self.chat.chatState == .LoadingServerChat)
+                    
+                    if self.chat.chatState == .LoadingServerChat {
+                        CircleLoading(circleSize: 10, mainColor: ColorPallet.Celeste, secondaryColor: ColorPallet.Celeste).padding(.top, 32)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: chat.isUserMessage ? .trailing : .leading )

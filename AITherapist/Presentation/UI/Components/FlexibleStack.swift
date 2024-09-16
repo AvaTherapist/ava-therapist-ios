@@ -65,7 +65,7 @@ struct FlexibleStack : Layout {
         var viewSizes : [CGSize] = []
         var rowHeight : CGFloat = 0
         var origin = CGRect.zero.origin
-        var hasSpace : (CGSize) -> Bool = {(origin.x + $0.width + spacing) <= maxWidth}
+        let hasSpace : (CGSize) -> Bool = {(origin.x + $0.width + spacing) <= maxWidth}
         //keep iterating untill row is filled
         while true {
             // if no views left

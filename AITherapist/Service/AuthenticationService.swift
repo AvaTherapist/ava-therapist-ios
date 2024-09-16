@@ -44,6 +44,7 @@ class MainAuthenticationService: AuthenticationService {
         
         self.settingDBRepository = settingDBRepository
         self.configureGID()
+        self.refreshToken()
     }
     
     func checkUserStatus(loading: Binding<Bool>) {
@@ -144,9 +145,7 @@ extension MainAuthenticationService{
     }
     
     func handleSingInWithAppleCompletion(result: Result<ASAuthorization, Error>){
-        let cancelBag = CancelBag()
-        
-        if case .failure(let failure) = result {
+        if case .failure(_) = result {
             self.appState[\.userData.user].cancelLoading()
         }
         else if case .success(let success) = result {
@@ -308,6 +307,22 @@ extension MainAuthenticationService {
 // MARK: Helper Functions
 
 extension MainAuthenticationService {
+    private func refreshToken() {
+        Auth.auth().currentUser?.getIDTokenResult(forcingRefresh: false, completion: { res, err in
+            guard err == nil else {
+                self.appState[\.userData.user].cancelLoading()
+                return
+            }
+                
+            guard let token = res?.token else{
+                AppState.UserData.shared.logout()
+                return
+            }
+            
+            self.authenticateWithServer(token)
+        })
+    }
+    
     private func register(name: String, email: String, password: String, mobileNumber: String) -> AnyPublisher<Void, Error>{
         authenticateRepository
             .register(name: name, email: email, password: password, mobileNumber: mobileNumber)

@@ -22,20 +22,17 @@ class NotificationManager: NotificationProtocol {
             if let error = error {
                 print("ERROR: \(error)")
                 onFailiure()
-                //                hasEnabledNotif = false
             }else{
                 print("SUCCESS")
                 onSuccess()
-                //                self.scheduelNotification()
-                //                hasEnabledNotif = true
             }
         }
     }
     
     func scheduelNotification(_ time: NotificationTime) {
         let content = UNMutableNotificationContent()
-        content.title = "How are you doing?"
-        content.body = "Lets have a chat"
+        content.title = "You Deserve Some Me-Time"
+        content.body = "Take a break and talk with Ava. Your well-being is worth it"
         content.sound = .default
         content.badge = 1
         

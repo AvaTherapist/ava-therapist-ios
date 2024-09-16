@@ -30,7 +30,7 @@ struct NewChatView: View {
                 .onAppear{
                     show.toggle()
                 }
-        case .partialLoaded(_):
+        case .partialLoaded(_, _):
             notRequestedView
         }
     }

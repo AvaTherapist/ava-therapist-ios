@@ -30,7 +30,7 @@ struct ActivityView: View {
             loadedView(activity)
         case .failed(_):
             EmptyView()
-        case .partialLoaded(_):
+        case .partialLoaded(_, _):
             EmptyView()
         }
     }
@@ -53,19 +53,12 @@ struct TodaysFactView: View {
     
     var body: some View {
         VStack(spacing: 0){
-            Text("Todays Fact")
+            Text(ActivityView.Constants.TodaysFact)
                 .font(.title2)
                 .foregroundStyle(ColorPallet.DarkBlueText)
                 .multilineTextAlignment(.center)
                 .padding(.bottom)
                 .bold()
-                
-            
-//            Text(dailyFact.title)
-//                .font(.title2)
-//                .foregroundStyle(ColorPallet.DarkBlueText)
-//                .bold()
-//                .multilineTextAlignment(.center)
             
             Text(dailyFact.content)
                 .font(.caption)
@@ -98,7 +91,7 @@ struct DailtExerciseView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 3){
-                Text("Daily Exercise")
+            Text(ActivityView.Constants.TodaysMindfulnessPracticeTitle)
                     .font(.title2)
                     .foregroundStyle(ColorPallet.DarkBlueText)
                     .multilineTextAlignment(.center)
@@ -151,7 +144,7 @@ struct DailyTaskView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 0){
-                Text("Daily Task")
+            Text(ActivityView.Constants.TodaysChallenge)
                     .font(.title2)
                     .foregroundStyle(ColorPallet.DarkBlueText)
                     .multilineTextAlignment(.center)
@@ -192,6 +185,14 @@ struct DailyTaskView: View {
                 self.animate = true
             }
         }
+    }
+}
+
+private extension ActivityView{
+    struct Constants{
+        static let TodaysMindfulnessPracticeTitle = "Todays Mindfulness Practice"
+        static let TodaysChallenge = "Todays Challenge"
+        static let TodaysFact = "Todays Fact"
     }
 }
 

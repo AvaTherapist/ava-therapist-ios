@@ -138,8 +138,6 @@ extension MainAppView {
 
             self.container.services.authenticationService.checkUserStatus(loading: self.bindingSubject(\.initalLoading))
             
-            
-            
             anyCancellable = container.appState.value.userData.objectWillChange.sink { (_) in
                 self.objectWillChange.send()
             }

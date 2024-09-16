@@ -20,7 +20,7 @@ struct NewChatChoiceView: View {
         FlexibleStack {
             ForEach(initialTextList, id: \.self) { text in
                 Text(text)
-                    .font(Font.custom("SF Pro Text", size: 10).bold())
+                    .font(Font.custom("SF Pro Text", size: 12).bold())
                 .padding()
                 .foregroundStyle(ColorPallet.DarkBlueText)
                 .background(

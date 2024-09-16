@@ -79,6 +79,7 @@ public struct GoogleSignInButton: View {
         }
       case .standard, .wide:
         HStack(alignment: .center) {
+          Spacer()
           ZStack {
             RoundedRectangle(cornerRadius: googleCornerRadius)
               .fill(

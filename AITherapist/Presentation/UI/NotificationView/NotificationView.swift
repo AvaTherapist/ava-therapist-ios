@@ -47,7 +47,7 @@ struct NotificationView: View {
             
             Button(action: {
                 self.hideKeyboard()
-                self.viewModel.onNotifDateSelected( self.currentSelectedDate)
+                self.viewModel.onNotifDateSelected(self.currentSelectedDate)
             }, label: {
                 Text("Let's do it")
                     .font(

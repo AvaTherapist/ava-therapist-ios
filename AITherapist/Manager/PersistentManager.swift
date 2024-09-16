@@ -46,6 +46,16 @@ class PersistentManager {
         keychain.delete(PersistentType.UserAuthToken.rawValue)
     }
     
+    func deleteNotificationStatus() {
+        keychain.delete(PersistentType.NotificationSeen.rawValue)
+    }
+    
+    func deleteAllUserData() {
+        self.deleteUserAuthToken()
+        self.deleteNotificationStatus()
+        self.deleteUserCookieToken()
+    }
+    
     func getUserAuthToken() -> String {
         let token = keychain.get(PersistentType.UserAuthToken.rawValue) ?? ""
         return token

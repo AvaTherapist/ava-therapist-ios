@@ -15,7 +15,7 @@ struct InsightView: View {
     @State private var isAnimatingMood = false
     @Binding private var showNewConversationChatView: Bool
     
-    @State var chartXPosAnchor: Double
+    @State var chartXPosAnchor: Date
     @State var chartType: ChartView.ChartType = .line
     
     @Namespace private var insightNamespace
@@ -26,9 +26,9 @@ struct InsightView: View {
         self.showingModalSheet = showingModalSheet
         self.isAnimatingMood = isAnimatingMood
         
-        self.moods = viewModel.insight.value?.getDailyMoodsArray() ?? moods
+        self.moods = viewModel.insight.value?.getDailyMoodsArray() ?? []
         self._showNewConversationChatView = showNewConversationChatView
-        self.chartXPosAnchor = Double(Date.now.timeIntervalSince1970)
+        self.chartXPosAnchor = Date.now
     }
     
     var body: some View {
@@ -186,7 +186,7 @@ struct MoodAnalyticsView: View {
     @Binding var shown: Bool
     
     @Binding var chartType: ChartView.ChartType
-    @Binding var chartXPosAnchor: Double
+    @Binding var chartXPosAnchor: Date
     let moods: [Mood]
     
     var body: some View {

@@ -40,9 +40,7 @@ extension AppState {
             self.insight = .notRequested
             
             _ = MainUserDBRepository().deleteUser()
-            
-            PersistentManager.instance.deleteUserCookieToken()
-            PersistentManager.instance.deleteUserAuthToken()
+            PersistentManager.instance.deleteAllUserData()
             DataBaseManager.Instance.ClearAllData()
             
             do{
