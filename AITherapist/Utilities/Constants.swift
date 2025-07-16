@@ -21,7 +21,7 @@ struct Constants {
     static let testQueue = DispatchQueue(label: "test")
     
     static let EmergencyPhoneNumber = "988"
-    static let InitialChatMessageBubbles: [String] = ["Experiencing stress right now", "Feeling down and need to talk", "Having trouble sleeping", "Feeling hopeless or lost", "Feeling grateful and blessed", "Excited and motivated"]
+    static let InitialChatMessageBubbles: [String] = ["Experiencing stress right now", "Feeling down and need to talk", "Feeling hopeless or lost", "Feeling grateful and blessed", "Excited and motivated"]
 }
 //======================================================================================================
 extension Constants {
